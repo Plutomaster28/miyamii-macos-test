@@ -1,0 +1,80 @@
+# Meisei Build Pipeline
+# ======================
+# Cross-platform GitHub Actions workflow
+# Compiles C/C++ code on Windows, macOS, and Linux
+# Includes artifact uploads for distribution
+# Suitable as a template for Meisei open-source projects
+
+name: Meisei Cross-Platform Build
+
+on:
+  push:
+    branches: [main]  # Triggers the workflow on pushes to the main branch
+  pull_request:
+    branches: [main]  # Also runs when a pull request targets the main branch
+
+jobs:
+  build-windows:
+    name: Build on Windows (MSVC)
+    runs-on: windows-latest  # GitHub-hosted Windows runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4  # Pulls the latest code from your repo
+
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1  # Sets up the Visual Studio command line environment
+
+      - name: Build (edit source file name)
+        run: cl /Fe:miyamii.exe main.c
+        # Replace 'main.c' with your actual source file(s)
+        # You can add flags like /O2 for optimizations or /W4 for warnings
+
+      - name: Upload Windows binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-Build  # This is how the artifact will appear in GitHub Actions UI
+          path: miyamii.exe  # Path to the output binary
+
+  build-macos:
+    name: Build on macOS
+    runs-on: macos-latest  # GitHub-hosted macOS runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build (edit source file name)
+        run: clang main.c -o miyamii-mac
+        # Replace 'main.c' with your actual source file(s)
+        # You can add flags like -Wall or -O2 depending on your needs
+
+      - name: Upload macOS binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS-Build
+          path: miyamii-mac
+
+  build-linux:
+    name: Build on Linux
+    runs-on: ubuntu-latest  # GitHub-hosted Ubuntu Linux runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build essentials
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+        # Installs gcc, make, and other developer tools if not present
+
+      - name: Build (edit source file name)
+        run: gcc main.c -o miyamii-linux
+        # Replace 'main.c' with your actual source file(s)
+        # You can customize with flags: -Wall -Wextra -O3 for performance
+
+      - name: Upload Linux binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: Linux-Build
+          path: miyamii-linux
+        # Artifacts can be downloaded from the GitHub Actions run summary
