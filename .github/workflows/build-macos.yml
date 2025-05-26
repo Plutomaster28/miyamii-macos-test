@@ -24,7 +24,7 @@ jobs:
         cp Info.plist MiyamiiApp.app/Contents/
 
     - name: Upload .app bundle
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: MiyamiiApp
         path: MiyamiiApp.app
