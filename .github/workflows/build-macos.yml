@@ -1,0 +1,30 @@
+name: Build Miyamii macOS App
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Compile C program
+      run: |
+        gcc miyamii.c -o miyamii
+
+    - name: Create .app bundle
+      run: |
+        mkdir -p MiyamiiApp.app/Contents/MacOS
+        mkdir -p MiyamiiApp.app/Contents/Resources
+        cp miyamii MiyamiiApp.app/Contents/MacOS/
+        cp Info.plist MiyamiiApp.app/Contents/
+
+    - name: Upload .app bundle
+      uses: actions/upload-artifact@v3
+      with:
+        name: MiyamiiApp
+        path: MiyamiiApp.app
